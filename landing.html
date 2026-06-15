@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Launch Pad — A Community Initiative by Ascentic</title>
+<meta name="description" content="An 8-week AI-powered accelerator for IT undergraduates and recent graduates. Learn from industry mentors, solve a real problem, and build something worth showing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161513;
+    --charcoal:#1E1E1E;
+    --charcoal-2:#262422;
+    --coral:#F26B5B;
+    --coral-deep:#D6492F;
+    --paper:#FAF7F2;
+    --paper-2:#F1ECE3;
+    --line:#E4DCD0;
+    --line-dark:#34302d;
+    --muted:#574F45;
+    --muted-2:#9A9183;
+    --white:#FFFFFF;
+    --radius:16px;
+    --maxw:1120px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"Space Mono",monospace}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  a{color:inherit}
+
+  /* ---------- NAV ---------- */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(30,30,30,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-dark)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--paper);font-weight:800;letter-spacing:-.01em;font-size:1.02rem}
+  .brand .mark{width:10px;height:10px;background:var(--coral);border-radius:2px;transform:rotate(45deg)}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{color:#C9C1B6;font-size:.92rem;font-weight:500;text-decoration:none;transition:color .2s}
+  .nav-links a:hover{color:var(--coral)}
+  .nav-cta{background:var(--coral-deep);color:#FFFFFF;padding:9px 18px;border-radius:9px;font-size:.9rem;font-weight:800;text-decoration:none;transition:background .2s}
+  .nav-cta:hover{background:#B83A22}
+  .nav-toggle{display:none}
+
+  /* ---------- HERO ---------- */
+  .hero{background:var(--charcoal);color:var(--paper);position:relative;overflow:hidden;padding:88px 0 96px}
+  .hero::before{content:"";position:absolute;left:-220px;bottom:-260px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(242,107,91,.18),transparent 60%);pointer-events:none}
+  .hero::after{content:"";position:absolute;right:-160px;top:-180px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(242,107,91,.14),transparent 62%);pointer-events:none}
+  .hero .wrap{position:relative;z-index:2}
+  .kicker{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--coral);display:flex;align-items:center;gap:12px;margin-bottom:26px}
+  .kicker::before{content:"";width:36px;height:1px;background:var(--coral)}
+  .hero h1{font-size:clamp(2.6rem,7vw,5rem);font-weight:800;line-height:1.0;letter-spacing:-.025em;max-width:16ch}
+  .hero h1 em{font-style:normal;color:var(--coral)}
+  .hero .sub{margin-top:28px;font-size:clamp(1.05rem,2vw,1.32rem);color:#DCD5CA;max-width:56ch;font-weight:500}
+  .hero-cta{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:1rem;padding:15px 28px;border-radius:11px;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease,background .2s ease}
+  .btn-primary{background:var(--coral);color:var(--white)}
+  .btn-primary:hover{background:var(--coral-deep);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--paper);border:1.5px solid rgba(255,255,255,.28)}
+  .btn-ghost:hover{border-color:var(--coral);color:var(--coral)}
+  .tagline-chips{margin-top:46px;display:flex;gap:10px;flex-wrap:wrap}
+  .chip{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B7AEA2;border:1px solid var(--line-dark);border-radius:30px;padding:7px 16px}
+  .chip b{color:var(--coral);font-weight:700}
+
+  /* ---------- COUNTDOWN (hero strip) ---------- */
+  .count-strip{margin-top:54px;background:var(--charcoal-2);border:1px solid var(--line-dark);border-radius:var(--radius);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+  .count-strip .cs-label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2)}
+  .count-strip .cs-date{font-size:1.15rem;font-weight:700;color:var(--paper);margin-top:4px}
+  .clock{display:flex;gap:14px}
+  .unit{text-align:center;min-width:62px}
+  .unit .n{font-family:"Space Mono",monospace;font-size:2rem;font-weight:700;color:var(--coral);line-height:1}
+  .unit .l{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-top:6px}
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  .sec{padding:90px 0}
+  .eyebrow{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--coral-deep);margin-bottom:16px}
+  .h2{font-size:clamp(1.8rem,4vw,2.7rem);font-weight:800;letter-spacing:-.02em;line-height:1.08;max-width:20ch}
+  .lead{margin-top:18px;color:var(--muted);font-size:1.12rem;max-width:62ch;font-weight:500}
+
+  /* ---------- THE SHIFT ---------- */
+  .shift{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .shift-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:54px;align-items:center}
+  .shift-points{list-style:none;margin-top:8px}
+  .shift-points li{padding:20px 0;border-bottom:1px solid var(--line);display:flex;gap:18px}
+  .shift-points li:last-child{border-bottom:none}
+  .shift-points .ix{font-family:"Space Mono",monospace;color:var(--coral-deep);font-weight:700;font-size:.95rem;padding-top:3px}
+  .shift-points strong{display:block;font-size:1.1rem;margin-bottom:3px}
+  .shift-points span{color:var(--muted);font-size:1rem}
+  .pull{background:var(--charcoal);color:var(--paper);border-radius:var(--radius);padding:40px 38px}
+  .pull q{font-size:clamp(1.4rem,2.8vw,1.85rem);font-weight:700;line-height:1.3;letter-spacing:-.01em;quotes:none}
+  .pull q span{color:var(--coral)}
+  .pull .by{margin-top:20px;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+
+  /* ---------- HOW IT WORKS (facts) ---------- */
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:48px}
+  .fact{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px 24px}
+  .fact .big{font-family:"Space Mono",monospace;font-size:2.4rem;font-weight:700;color:var(--coral-deep);line-height:1}
+  .fact .cap{margin-top:10px;font-size:.98rem;color:var(--ink);font-weight:600}
+  .fact .sub{margin-top:4px;font-size:.9rem;color:var(--muted);font-weight:500}
+
+  /* ---------- JOURNEY ---------- */
+  .journey{background:var(--charcoal);color:var(--paper)}
+  .journey .eyebrow{color:var(--coral)}
+  .journey .lead{color:#CBC3B8}
+  .steps{margin-top:50px;display:grid;gap:0}
+  .step{display:grid;grid-template-columns:90px 1fr;gap:28px;padding:28px 0;border-top:1px solid var(--line-dark);align-items:start}
+  .step:last-child{border-bottom:1px solid var(--line-dark)}
+  .step .sn{font-family:"Space Mono",monospace;font-size:1.7rem;font-weight:700;color:var(--coral)}
+  .step h3{font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+  .step p{margin-top:8px;color:#CBC3B8;font-size:1.02rem;max-width:64ch;font-weight:500}
+
+  /* ---------- OUTCOMES ---------- */
+  .out-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:44px}
+  .out{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:30px 28px;display:flex;gap:18px;align-items:flex-start}
+  .out .tick{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(242,107,91,.14);color:var(--coral-deep);display:grid;place-items:center;font-weight:800;font-size:1rem}
+  .out h3{font-size:1.12rem;font-weight:700}
+  .out p{margin-top:5px;color:var(--muted);font-size:.97rem}
+
+  /* ---------- SHOWCASE ---------- */
+  .showcase{background:var(--ink);color:var(--paper);position:relative;overflow:hidden}
+  .showcase::after{content:"";position:absolute;right:-140px;bottom:-180px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(242,107,91,.16),transparent 62%)}
+  .showcase .wrap{position:relative;z-index:2}
+  .showcase .eyebrow{color:var(--coral)}
+  .showcase .h2{max-width:24ch}
+  .showcase .lead{color:#CBC3B8;max-width:60ch}
+  .showcase-tags{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px}
+  .showcase-tags .t{border:1px solid var(--line-dark);border-radius:30px;padding:9px 18px;font-size:.92rem;color:#CFC7BB}
+
+  /* ---------- TWO-COL: APPLY + COMMIT ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:34px 32px}
+  .panel h3{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
+  .panel .ph{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--coral-deep);margin-bottom:8px}
+  .panel ul{list-style:none;margin-top:18px}
+  .panel li{position:relative;padding:9px 0 9px 26px;font-size:1rem;border-bottom:1px solid var(--paper-2)}
+  .panel li:last-child{border-bottom:none}
+  .apply li::before{content:"";position:absolute;left:0;top:16px;width:8px;height:8px;border-radius:50%;background:var(--coral)}
+  .commit li::before{content:"";position:absolute;left:0;top:13px;width:13px;height:13px;border:2px solid var(--coral);border-radius:3px}
+  .panel .note{margin-top:18px;font-size:.9rem;color:var(--muted);font-style:italic}
+
+  /* ---------- FAQ ---------- */
+  .faq{background:var(--paper-2);border-top:1px solid var(--line)}
+  .faq-list{margin-top:40px;border-top:1px solid var(--line)}
+  .qa{border-bottom:1px solid var(--line)}
+  .qa summary{cursor:pointer;list-style:none;padding:22px 4px;display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:1.12rem;font-weight:700}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+  .qa .plus{flex:none;color:var(--coral);font-size:1.5rem;font-weight:400;transition:transform .25s ease}
+  .qa[open] .plus{transform:rotate(45deg)}
+  .qa .a{padding:0 4px 24px;color:var(--muted);font-size:1.02rem;max-width:70ch}
+
+  /* ---------- FINAL CTA ---------- */
+  .launch{background:var(--charcoal);color:var(--paper);text-align:center;position:relative;overflow:hidden;padding:96px 0}
+  .launch::before{content:"";position:absolute;left:50%;top:-200px;transform:translateX(-50%);width:680px;height:680px;border-radius:50%;background:radial-gradient(circle,rgba(242,107,91,.18),transparent 60%)}
+  .launch .wrap{position:relative;z-index:2}
+  .launch .eyebrow{color:var(--coral);justify-content:center;display:flex}
+  .launch h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0 auto;max-width:18ch}
+  .launch .clock{justify-content:center;margin-top:38px}
+  .launch .clock .unit{min-width:84px}
+  .launch .clock .n{font-size:3rem}
+  .launch .state{margin-top:14px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+  .launch .launch-cta{margin-top:38px}
+  .launch .micro{margin-top:18px;font-size:.92rem;color:#B7AEA2}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink);color:#B7AEA2;padding:48px 0;border-top:1px solid var(--line-dark)}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  footer .fb{display:flex;align-items:center;gap:10px;color:var(--paper);font-weight:800}
+  footer .fb .mark{width:9px;height:9px;background:var(--coral);border-radius:2px;transform:rotate(45deg)}
+  footer .tag{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;color:var(--muted-2)}
+
+  /* ---------- REVEAL ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:880px){
+    .shift-grid{grid-template-columns:1fr;gap:34px}
+    .facts{grid-template-columns:1fr 1fr}
+    .out-grid{grid-template-columns:1fr}
+    .split{grid-template-columns:1fr}
+  }
+  @media(max-width:680px){
+    .nav-links{position:fixed;inset:64px 0 auto 0;background:var(--charcoal);flex-direction:column;align-items:flex-start;gap:0;padding:8px 28px 20px;border-bottom:1px solid var(--line-dark);transform:translateY(-130%);transition:transform .3s ease}
+    .nav-links.open{transform:none}
+    .nav-links a{padding:14px 0;width:100%;border-bottom:1px solid var(--line-dark)}
+    .nav-links .nav-cta{margin-top:12px;border-bottom:none}
+    .nav-toggle{display:inline-flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+    .nav-toggle span{width:24px;height:2px;background:var(--paper);display:block}
+    .count-strip{flex-direction:column;align-items:flex-start}
+    .facts{grid-template-columns:1fr}
+    .step{grid-template-columns:1fr;gap:6px}
+    .sec{padding:64px 0}
+    .clock .unit{min-width:54px}
+    .launch .clock .unit{min-width:64px}
+    .launch .clock .n{font-size:2.2rem}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark"></span> AI Launch Pad</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" id="navToggle"><span></span><span></span><span></span></button>
+    <div class="nav-links" id="navLinks">
+      <a href="#shift">The shift</a>
+      <a href="#program">Program</a>
+      <a href="#journey">Journey</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#apply">Who can apply</a>
+      <a class="nav-cta" id="navCta" href="#launch">Notify me</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="kicker">A Community Initiative by Ascentic</div>
+    <h1>Graduate with <em>proof</em>, not just a degree.</h1>
+    <p class="sub">AI Launch Pad is an 8-week accelerator for IT undergraduates and recent graduates. Learn from industry mentors, solve a real problem, and walk away with something worth showing.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" id="heroCta" href="#launch">Notify me &rarr;</a>
+      <a class="btn btn-ghost" href="#program">See how it works</a>
+    </div>
+    <div class="tagline-chips">
+      <span class="chip"><b>Learn</b></span>
+      <span class="chip"><b>Build</b></span>
+      <span class="chip"><b>Showcase</b></span>
+    </div>
+
+    <!-- countdown strip -->
+    <div class="count-strip">
+      <div>
+        <div class="cs-label">Applications open in</div>
+        <div class="cs-date">1 July 2026</div>
+      </div>
+      <div class="clock" id="clockHero" aria-label="Countdown to applications opening">
+        <div class="unit"><div class="n" data-d>--</div><div class="l">Days</div></div>
+        <div class="unit"><div class="n" data-h>--</div><div class="l">Hrs</div></div>
+        <div class="unit"><div class="n" data-m>--</div><div class="l">Min</div></div>
+        <div class="unit"><div class="n" data-s>--</div><div class="l">Sec</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ THE SHIFT ============ -->
+<section class="sec shift" id="shift">
+  <div class="wrap shift-grid">
+    <div class="reveal">
+      <div class="eyebrow">Why now</div>
+      <h2 class="h2">The rules of getting hired just changed.</h2>
+      <ul class="shift-points">
+        <li><span class="ix">01</span><div><strong>Entry-level is shrinking.</strong><span>AI is automating the routine work that internships and junior roles used to be built on.</span></div></li>
+        <li><span class="ix">02</span><div><strong>The loop is real.</strong><span>No experience means no opportunity — which means no experience. Most graduates are stuck in it.</span></div></li>
+        <li><span class="ix">03</span><div><strong>Proof beats knowing.</strong><span>The graduates who stand out tomorrow aren't the ones who know more. They're the ones who can show what they've built.</span></div></li>
+      </ul>
+    </div>
+    <div class="pull reveal">
+      <q>Experience is no longer about time served. It's about <span>output created.</span></q>
+      <div class="by">The shift we're driving</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROGRAM / HOW IT WORKS ============ -->
+<section class="sec" id="program">
+  <div class="wrap">
+    <div class="eyebrow">What it is</div>
+    <h2 class="h2">An 8-week, AI-powered accelerator.</h2>
+    <p class="lead">Working alongside experienced mentors from Ascentic, you'll explore how AI can solve real-world challenges — and develop a practical solution that demonstrates exactly what you can do. This is your chance to learn from professionals who tackle these problems every day.</p>
+    <div class="facts">
+      <div class="fact reveal"><div class="big">8</div><div class="cap">Weeks</div><div class="sub">Guided and hands-on</div></div>
+      <div class="fact reveal"><div class="big">6</div><div class="cap">Saturday sessions</div><div class="sub">2 hours, led by industry experts</div></div>
+      <div class="fact reveal"><div class="big">1:1</div><div class="cap">Dedicated mentor</div><div class="sub">Personalised feedback, every week</div></div>
+      <div class="fact reveal"><div class="big">01</div><div class="cap">Real project</div><div class="sub">Portfolio-worthy, built by you</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNEY ============ -->
+<section class="sec journey" id="journey">
+  <div class="wrap">
+    <div class="eyebrow">What you'll do</div>
+    <h2 class="h2">From idea to proof, in eight weeks.</h2>
+    <p class="lead">A step-by-step journey that takes you from understanding AI's impact to standing on a stage with something you built.</p>
+    <div class="steps">
+      <div class="step reveal"><div class="sn">01</div><div><h3>Reset</h3><p>Understand how AI is reshaping work, opportunity, and what employers actually look for.</p></div></div>
+      <div class="step reveal"><div class="sn">02</div><div><h3>Activate</h3><p>Learn how modern AI tools accelerate thinking and execution — and start using them with intent.</p></div></div>
+      <div class="step reveal"><div class="sn">03</div><div><h3>Find a problem</h3><p>Identify a real-world challenge worth solving. Something that matters, not a textbook exercise.</p></div></div>
+      <div class="step reveal"><div class="sn">04</div><div><h3>Build</h3><p>Design, prototype, or build an AI-enabled solution or proof of concept — guided by your mentor along the way.</p></div></div>
+      <div class="step reveal"><div class="sn">05</div><div><h3>Showcase</h3><p>Get feedback from industry professionals, and — if shortlisted — present your work at the Showcase Event.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OUTCOMES ============ -->
+<section class="sec" id="outcomes">
+  <div class="wrap">
+    <div class="eyebrow">What you walk away with</div>
+    <h2 class="h2">A portfolio, not a certificate.</h2>
+    <div class="out-grid">
+      <div class="out reveal"><div class="tick">&#10003;</div><div><h3>A real, portfolio-worthy project</h3><p>Something you designed and built — proof you can create value, not just talk about it.</p></div></div>
+      <div class="out reveal"><div class="tick">&#10003;</div><div><h3>Feedback from industry professionals</h3><p>Direct, honest input from people who do this work every day at Ascentic.</p></div></div>
+      <div class="out reveal"><div class="tick">&#10003;</div><div><h3>Real fluency with AI tools</h3><p>The practical ability to use AI to accelerate how you think, build, and ship.</p></div></div>
+      <div class="out reveal"><div class="tick">&#10003;</div><div><h3>A shot at the Showcase stage</h3><p>Selected participants present to an audience of industry professionals and peers.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHOWCASE ============ -->
+<section class="sec showcase" id="showcase">
+  <div class="wrap">
+    <div class="eyebrow">The Showcase Event</div>
+    <h2 class="h2">Your moment to demonstrate what you can build.</h2>
+    <p class="lead">At the end of the program, selected participants are invited to present their projects at the Ascentic AI Launch Pad Showcase Event — in front of an audience of industry professionals and peers. It's your opportunity to show your ideas, creativity, and problem-solving in the room where it counts. You'll be trained and supported every step of the way.</p>
+    <div class="showcase-tags">
+      <span class="t">Industry professionals</span>
+      <span class="t">University representatives</span>
+      <span class="t">Recruiters &amp; decision-makers</span>
+      <span class="t">Fellow participants</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPLY + COMMIT ============ -->
+<section class="sec faq-spacer" id="apply" style="background:var(--paper-2);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="eyebrow">Before you apply</div>
+    <h2 class="h2">Is this for you?</h2>
+    <p class="lead">Places are limited, and participants are selected through an application process. Apply only if both of these fit.</p>
+    <div class="split">
+      <div class="panel apply reveal">
+        <div class="ph">Who can apply</div>
+        <h3>You're eligible if you're a&hellip;</h3>
+        <ul>
+          <li>3rd or 4th year IT undergraduate</li>
+          <li>Recent IT graduate</li>
+          <li>From any university or institution</li>
+          <li>Ready to move beyond learning and start building</li>
+        </ul>
+      </div>
+      <div class="panel commit reveal">
+        <div class="ph">What we'll ask of you</div>
+        <h3>You can commit to&hellip;</h3>
+        <ul>
+          <li>Attending all 6 Saturday sessions</li>
+          <li>Spending real time developing your project</li>
+          <li>Working closely with your assigned mentor</li>
+          <li>Building a solution to a real-world challenge</li>
+          <li>Presenting at the Showcase if shortlisted</li>
+        </ul>
+        <p class="note">You'll be trained and supported throughout the journey.</p>
+      </div>
+    </div>
+    <!-- <div class="apply-cta" style="margin-top:34px;display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+      <button class="btn btn-primary" data-cal>+ Add 1 July to my calendar</button>
+      <a class="btn" data-notify style="background:transparent;color:var(--ink);border:1.5px solid var(--line)">Notify me when it opens</a>
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--muted)">Applications open 1 July 2026</span>
+    </div> -->
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec faq" id="faq">
+  <div class="wrap">
+    <div class="eyebrow">Good to know</div>
+    <h2 class="h2">Questions, answered.</h2>
+    <div class="faq-list">
+      <details class="qa"><summary>How much time will it take each week?<span class="plus">+</span></summary><div class="a">A 2-hour session every Saturday for 6 of the 8 weeks, plus your own time building your project and a weekly check-in with your mentor. The more you put in, the stronger your final project.</div></details>
+      <details class="qa"><summary>Do I need to be a strong coder?<span class="plus">+</span></summary><div class="a">No. You need to be a 3rd/4th year IT undergrad or recent graduate who's willing to learn and build. The program is about using AI to create value — your mentor guides you through the rest.</div></details>
+      <details class="qa"><summary>What exactly will I build?<span class="plus">+</span></summary><div class="a">You'll identify a real-world problem worth solving and design, prototype, or build an AI-enabled solution or proof of concept around it. The idea is yours — the mentorship helps you make it real.</div></details>
+      <details class="qa"><summary>What happens if I'm shortlisted?<span class="plus">+</span></summary><div class="a">Selected participants present their projects at the Showcase Event to an audience of industry professionals and peers. You'll be trained and supported to present with confidence.</div></details>
+      <details class="qa"><summary>When do applications open?<span class="plus">+</span></summary><div class="a">Applications open on 1 July 2026. Until then, explore the program here and decide if AI Launch Pad is the right opportunity for you. Tap "Notify me" to be the first to know when registration goes live.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA / LAUNCH ============ -->
+<section class="launch" id="launch">
+  <div class="wrap">
+    <div class="eyebrow">The countdown</div>
+    <h2>Be ready when the doors open.</h2>
+    <div class="clock" id="clockLaunch" aria-label="Countdown to applications opening">
+      <div class="unit"><div class="n" data-d>--</div><div class="l">Days</div></div>
+      <div class="unit"><div class="n" data-h>--</div><div class="l">Hrs</div></div>
+      <div class="unit"><div class="n" data-m>--</div><div class="l">Min</div></div>
+      <div class="unit"><div class="n" data-s>--</div><div class="l">Sec</div></div>
+    </div>
+    <div class="state" id="launchState">Applications open 1 July 2026</div>
+    <div class="launch-cta" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" id="launchCta" data-cal>+ Add to calendar</button>
+    </div>
+    <!-- <p class="micro">Learn. Build. Showcase. — A Community Initiative by Ascentic.</p> -->
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fb"><span class="mark"></span> AI Launch Pad</div>
+    <div class="tag">A COMMUNITY INITIATIVE BY ASCENTIC</div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   CONFIG — edit these three lines to control the site.
+   When Reggie is live on 1 July, set registrationOpen = true
+   and drop the Reggie URL into registrationUrl. The "Notify
+   me" buttons across the page will switch to "Register now".
+   notifyUrl = your interest-capture form (Google Form / Tally /
+   mailing list) used during the countdown window.
+   ========================================================= */
+const CONFIG = {
+  launchDate: "2026-07-01T00:00:00+05:30",   // Colombo time
+  registrationOpen: false,                    // flip to true when Reggie is live
+  registrationUrl: "#",                        // Reggie registration link
+  notifyUrl: "#"                               // interest-capture form link
+};
+
+/* ---- Apply CTA state (register switch) ---- */
+(function setCtas(){
+  const open = CONFIG.registrationOpen;
+  // When registration is open, convert notify + nav into "Register now"
+  document.querySelectorAll("[data-notify]").forEach(el=>{
+    if(open){
+      el.textContent = "Register now \u2192";
+      el.setAttribute("href", CONFIG.registrationUrl);
+      el.setAttribute("target","_blank"); el.setAttribute("rel","noopener");
+    } else {
+      el.setAttribute("href", CONFIG.notifyUrl);
+      if(CONFIG.notifyUrl !== "#"){ el.setAttribute("target","_blank"); el.setAttribute("rel","noopener"); }
+      else { el.addEventListener("click",e=>e.preventDefault()); } // no dead scroll-jump
+    }
+  });
+  // Nav + hero buttons follow the same rule
+  ["navCta","heroCta"].forEach(id=>{
+    const el = document.getElementById(id); if(!el) return;
+    if(open){ el.innerHTML = id==="navCta"?"Register now":"Register now &rarr;"; el.setAttribute("href",CONFIG.registrationUrl); el.target="_blank"; }
+  });
+  if(open){ const s=document.getElementById("launchState"); if(s) s.textContent="Applications are open — register now"; }
+})();
+
+/* ---- Add to calendar (Google + .ics, no backend needed) ---- */
+(function calendar(){
+  const TITLE = "AI Launch Pad — Applications Open";
+  const DETAILS = "Applications for the Ascentic AI Launch Pad open today. Visit the site to register.";
+  const START = "20260701", END = "20260702"; // all-day, 1 July 2026
+  const gcal = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent(TITLE)
+    + "&dates=" + START + "/" + END
+    + "&details=" + encodeURIComponent(DETAILS);
+
+  function downloadICS(){
+    const stamp = new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+    const ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascentic//AI Launch Pad//EN",
+      "BEGIN:VEVENT","UID:ailaunchpad-apps-open@ascentic","DTSTAMP:"+stamp,
+      "DTSTART;VALUE=DATE:"+START,"DTEND;VALUE=DATE:"+END,
+      "SUMMARY:"+TITLE,"DESCRIPTION:"+DETAILS,
+      "BEGIN:VALARM","TRIGGER:-PT9H","ACTION:DISPLAY","DESCRIPTION:"+TITLE,"END:VALARM",
+      "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    const blob = new Blob([ics],{type:"text/calendar"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "ai-launch-pad.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  // shared popover
+  const pop = document.createElement("div");
+  pop.id="calPop";
+  pop.style.cssText="position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(20,20,20,.55);backdrop-filter:blur(3px)";
+  pop.innerHTML='<div role="dialog" aria-label="Add to calendar" style="background:#FAF7F2;border-radius:16px;padding:30px 28px;max-width:340px;width:90%;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)">'
+    +'<div style="font-family:Space Mono,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#D6492F">Set a reminder</div>'
+    +'<h3 style="font-size:1.25rem;font-weight:800;margin:8px 0 4px;color:#161513">Applications open 1 July</h3>'
+    +'<p style="color:#574F45;font-size:.95rem;margin-bottom:20px;font-weight:500">Add it to your calendar so you don\'t miss the day registration goes live.</p>'
+    +'<a id="calGoogle" href="'+gcal+'" target="_blank" rel="noopener" style="display:block;background:#F26B5B;color:#fff;font-weight:700;text-decoration:none;padding:13px;border-radius:10px;margin-bottom:10px">Google Calendar</a>'
+    +'<button id="calIcs" style="display:block;width:100%;background:#1E1E1E;color:#FAF7F2;font-weight:700;border:none;cursor:pointer;padding:13px;border-radius:10px;font-family:inherit;font-size:1rem">Apple / Outlook (.ics)</button>'
+    +'<button id="calClose" style="margin-top:14px;background:none;border:none;color:#574F45;cursor:pointer;font-family:inherit;font-size:.9rem;text-decoration:underline">Close</button>'
+    +'</div>';
+  document.body.appendChild(pop);
+  function openPop(){ pop.style.display="flex"; }
+  function closePop(){ pop.style.display="none"; }
+  pop.addEventListener("click",e=>{ if(e.target===pop) closePop(); });
+  pop.querySelector("#calClose").addEventListener("click",closePop);
+  pop.querySelector("#calIcs").addEventListener("click",()=>{ downloadICS(); closePop(); });
+
+  document.querySelectorAll("[data-cal]").forEach(b=>{
+    // if registration already open, the launch primary becomes Register instead
+    if(CONFIG.registrationOpen && b.id==="launchCta"){
+      b.textContent="Register now \u2192";
+      b.addEventListener("click",()=>window.open(CONFIG.registrationUrl,"_blank"));
+    } else {
+      b.addEventListener("click",openPop);
+    }
+  });
+})();
+
+/* ---- Countdown ---- */
+(function countdown(){
+  const target = new Date(CONFIG.launchDate).getTime();
+  const clocks = document.querySelectorAll(".clock");
+  function pad(n){ return String(n).padStart(2,"0"); }
+  function tick(){
+    const diff = target - Date.now();
+    if(diff <= 0){
+      clocks.forEach(c=>{
+        c.querySelector("[data-d]").textContent="00";
+        c.querySelector("[data-h]").textContent="00";
+        c.querySelector("[data-m]").textContent="00";
+        c.querySelector("[data-s]").textContent="00";
+      });
+      const s = document.getElementById("launchState");
+      if(s && !CONFIG.registrationOpen) s.textContent = "Opening soon — stay tuned";
+      clearInterval(timer);
+      return;
+    }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor(diff%86400000/3600000);
+    const m = Math.floor(diff%3600000/60000);
+    const sec = Math.floor(diff%60000/1000);
+    clocks.forEach(c=>{
+      c.querySelector("[data-d]").textContent=pad(d);
+      c.querySelector("[data-h]").textContent=pad(h);
+      c.querySelector("[data-m]").textContent=pad(m);
+      c.querySelector("[data-s]").textContent=pad(sec);
+    });
+  }
+  tick();
+  const timer = setInterval(tick,1000);
+})();
+
+/* ---- Mobile nav ---- */
+(function nav(){
+  const t = document.getElementById("navToggle");
+  const l = document.getElementById("navLinks");
+  if(!t) return;
+  t.addEventListener("click",()=>{
+    const open = l.classList.toggle("open");
+    t.setAttribute("aria-expanded", open);
+  });
+  l.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+    l.classList.remove("open"); t.setAttribute("aria-expanded",false);
+  }));
+})();
+
+/* ---- Scroll reveal ---- */
+(function reveal(){
+  const els = document.querySelectorAll(".reveal");
+  if(!("IntersectionObserver" in window)){ els.forEach(e=>e.classList.add("in")); return; }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }});
+  },{threshold:.14});
+  els.forEach(e=>io.observe(e));
+})();
+</script>
+</body>
+</html>
