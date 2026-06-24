@@ -1,0 +1,842 @@
+<!-- AI Launch Pad — Reggie registration journey (UX layout prototype) -->
+<!-- Un-themed on purpose: structure & flow only. Visual theming applied later by Design. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reggie — registration journey (UX prototype)</title>
+<style>
+  :root{
+    --bg:#eef0f3; --surface:#ffffff; --surface-2:#f3f5f8; --rail:#f7f8fa;
+    --ink:#1b1f24; --ink-soft:#5d6671; --ink-faint:#8a929c; --line:#e4e8ed;
+    --accent:#4f5b93;            /* placeholder accent — Design will replace */
+    --accent-soft:#edeef6; --accent-line:#d6daec;
+    --ok:#1f8f63; --ok-soft:#e7f4ee; --err:#bf4630; --err-soft:#fbeae6;
+    --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:28px;
+    --shadow:0 1px 2px rgba(20,24,30,.05),0 8px 30px rgba(20,24,30,.07);
+    font-synthesis-weight:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; min-height:100%;
+    padding:18px 16px 40px;
+  }
+  button{font:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+  /* ---- Demo harness (clearly scaffolding, not product) ---- */
+  .harness{
+    width:100%; max-width:1120px; background:#15181d; color:#e6e9ee;
+    border-radius:14px; padding:10px 14px; margin-bottom:16px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    font-size:13px;
+  }
+  .harness .tag{display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:.02em;color:#aeb6c2}
+  .harness .dot{width:8px;height:8px;border-radius:50%;background:#7c87ff}
+  .hgroup{display:flex;align-items:center;gap:8px}
+  .hgroup label{color:#9aa3b0}
+  .seg{display:inline-flex;background:#262b33;border-radius:9px;padding:3px}
+  .seg button{border:0;background:transparent;color:#aeb6c2;padding:5px 11px;border-radius:7px;font-size:12.5px;font-weight:600}
+  .seg button[aria-pressed="true"]{background:#3a4150;color:#fff}
+  .harness .spacer{flex:1}
+  .harness .restart{border:1px solid #39414c;background:transparent;color:#c7cdd6;border-radius:8px;padding:6px 12px;font-weight:600}
+  .harness .note{flex-basis:100%;color:#717a86;font-size:11.5px;margin-top:2px}
+
+  /* ---- Device frame ---- */
+  .stage{width:100%;display:flex;justify-content:center}
+  .frame{
+    width:100%; max-width:1120px; background:var(--surface);
+    border:1px solid var(--line); border-radius:var(--r-xl);
+    box-shadow:var(--shadow); overflow:hidden; position:relative;
+    transition:max-width .25s ease;
+  }
+  .frame.mobile{max-width:402px;border-radius:34px;border:8px solid #15181d}
+
+  /* ============ LANDING ============ */
+  .landing{padding:48px 56px 40px}
+  .frame.mobile .landing{padding:30px 22px 26px}
+  .brandrow{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:13px;font-weight:600;letter-spacing:.02em}
+  .brandrow .mark{width:26px;height:26px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px}
+  .landing h1{font-size:34px;line-height:1.12;letter-spacing:-.02em;margin:26px 0 12px;font-weight:800;max-width:18ch}
+  .frame.mobile .landing h1{font-size:26px}
+  .lead{color:var(--ink-soft);font-size:16.5px;max-width:54ch;margin:0 0 4px}
+  .meta-pills{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 6px}
+  .pill{display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13.5px;color:var(--ink-soft);font-weight:600}
+  .pill b{color:var(--ink);font-weight:700}
+
+  .privacy{margin-top:26px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--rail);overflow:hidden}
+  .privacy summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px}
+  .privacy summary::-webkit-details-marker{display:none}
+  .privacy summary .shield{width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:13px}
+  .privacy summary .chev{margin-left:auto;color:var(--ink-faint);transition:transform .2s}
+  .privacy[open] summary .chev{transform:rotate(180deg)}
+  .privacy .body{padding:2px 20px 20px}
+  .privacy .sub{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:8px 0 8px}
+  .privacy ul{margin:0;padding:0;list-style:none;display:grid;gap:11px}
+  .privacy li{display:flex;gap:11px;font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .privacy li .ic{flex:none;width:20px;height:20px;border-radius:6px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);font-size:11px;margin-top:1px}
+  .privacy hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+  .cta-row{margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .btn{border:0;border-radius:13px;padding:15px 26px;font-weight:700;font-size:15.5px;background:var(--accent);color:#fff;transition:transform .06s,filter .15s}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+  .consent-note{color:var(--ink-faint);font-size:13px;max-width:42ch}
+
+  /* ============ CHAT ============ */
+  .chat-wrap{display:grid;grid-template-columns:280px 1fr;min-height:660px}
+  .frame.mobile .chat-wrap{grid-template-columns:1fr;min-height:0}
+
+  /* progress rail */
+  .rail{background:var(--rail);border-right:1px solid var(--line);padding:26px 22px;display:flex;flex-direction:column}
+  .frame.mobile .rail{display:none}
+  .rail .eyebrow{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:20px}
+  .steps{display:flex;flex-direction:column;gap:2px;flex:1}
+  .step{display:flex;gap:13px;padding:7px 0;position:relative}
+  .step .num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);color:var(--ink-faint);z-index:1}
+  .step .line{position:absolute;left:14.5px;top:34px;bottom:-2px;width:1px;background:var(--line)}
+  .step:last-child .line{display:none}
+  .step .label{padding-top:4px}
+  .step .t{font-weight:600;font-size:14px;color:var(--ink-faint)}
+  .step .d{font-size:12px;color:var(--ink-faint);margin-top:2px;line-height:1.4;display:none}
+  .step.current .num{background:var(--accent);border-color:var(--accent);color:#fff}
+  .step.current .t{color:var(--ink)}
+  .step.current .d{display:block;color:var(--ink-soft)}
+  .step.done .num{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .step.done .t{color:var(--ink-soft)}
+  .step.done .line{background:var(--ok)}
+  .railprog{margin-top:20px}
+  .railprog .cap{font-size:12.5px;color:var(--ink-soft);margin-bottom:8px}
+  .railprog .cap b{color:var(--ink)}
+  .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s ease}
+
+  /* chat column */
+  .conv{display:flex;flex-direction:column;min-height:0}
+  .conv-head{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--line)}
+  .conv-head .av{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800}
+  .conv-head .who{font-weight:700;font-size:15px}
+  .conv-head .role{font-size:12.5px;color:var(--ink-faint)}
+  .conv-head .online{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);background:var(--surface-2);padding:5px 11px;border-radius:999px}
+  .conv-head .online i{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  /* mobile mini progress */
+  .miniprog{display:none}
+  .frame.mobile .miniprog{display:block;padding:12px 18px 4px}
+  .miniprog .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);margin-bottom:7px}
+  .miniprog .row b{color:var(--ink)}
+
+  .msgs{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth}
+  .frame.mobile .msgs{padding:18px}
+  .msg{display:flex;gap:12px;max-width:84%}
+  .msg .ava{flex:none;width:32px;height:32px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:13px}
+  .bubble{background:var(--surface-2);border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:14px 17px;line-height:1.62;font-size:15px}
+  .msg.user{align-self:flex-end;flex-direction:row-reverse;max-width:78%}
+  .msg.user .bubble{background:var(--accent);color:#fff;border-color:var(--accent);border-radius:18px 4px 18px 18px;white-space:pre-wrap}
+  .bubble.transition{background:transparent;border:0;color:var(--ink-faint);font-size:13.5px;padding:4px 2px;font-weight:600;letter-spacing:.01em}
+  .divider{display:flex;align-items:center;gap:14px;margin:8px 2px 2px}
+  .divider .dl{flex:1;height:1px;background:var(--line)}
+  .divider .dp{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap}
+  .bubble strong{font-weight:700}
+  .hint{display:block;margin-top:7px;font-size:13px;color:var(--ink-faint)}
+  .typing{display:inline-flex;gap:4px;align-items:center;padding:4px 2px}
+  .typing span{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);opacity:.5;animation:bln 1s infinite}
+  .typing span:nth-child(2){animation-delay:.15s} .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bln{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:.9}}
+
+  /* input dock */
+  .dock{border-top:1px solid var(--line);padding:16px 22px 18px}
+  .frame.mobile .dock{padding:12px 16px 16px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+  .suggest{margin-bottom:13px}
+  .suggest-label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:0 0 9px}
+  .chip{border:1px solid var(--accent-line);background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:11px 20px;font-weight:600;font-size:14.5px;transition:background .12s}
+  .chip:hover{background:#e3e6f3}
+  .chip.alt{border-color:var(--line);background:var(--surface-2);color:var(--ink-soft)}
+  .field{display:flex;gap:10px;align-items:stretch}
+  .field input,.field textarea{
+    flex:1;border:1px solid var(--line);background:var(--surface);border-radius:13px;
+    padding:13px 16px;font:inherit;color:var(--ink);resize:none;line-height:1.5;
+  }
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field textarea{min-height:88px}
+  .send{flex:none;width:50px;border:0;border-radius:13px;background:var(--accent);color:#fff;font-size:18px;display:grid;place-items:center}
+  .send:disabled{opacity:.4;cursor:not-allowed}
+  .quickfill{margin-top:9px;display:flex;gap:8px;flex-wrap:wrap}
+  .quickfill button{border:1px dashed var(--line);background:transparent;color:var(--ink-soft);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600}
+  .examplehint{font-size:13px;color:var(--ink-faint);margin:0 0 9px}
+  .examplehint b{color:var(--ink-soft);font-weight:600}
+  .errline{color:var(--err);font-size:13px;margin:9px 0 0;display:flex;gap:7px;align-items:center}
+  .dockfoot{font-size:12px;color:var(--ink-faint);margin-top:11px;text-align:center}
+
+  /* ============ SUMMARY CARD ============ */
+  .summary{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;width:100%}
+  .summary .shead{padding:15px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:9px}
+  .sgroup{padding:6px 18px 12px}
+  .sgroup .gt{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:14px 0 6px}
+  .srow{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--surface-2)}
+  .srow:last-child{border-bottom:0}
+  .srow .k{flex:none;width:38%;color:var(--ink-soft);font-size:13.5px;padding-top:2px}
+  .srow .v{flex:1;font-size:14.5px;font-weight:600;word-break:break-word}
+  .srow .edit{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;width:30px;height:30px;display:grid;place-items:center;color:var(--ink-soft);font-size:13px}
+  .srow .edit:hover{color:var(--accent);border-color:var(--accent-line)}
+  .srow.updated{background:var(--ok-soft);border-radius:10px;margin:0 -8px;padding:9px 8px}
+  .updtag{color:var(--ok);font-size:12px;font-weight:700;margin-left:8px;animation:fade 2.4s forwards}
+  @keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
+  .editor{flex:1;display:flex;flex-direction:column;gap:9px}
+  .editor .crow{display:flex;gap:8px;flex-wrap:wrap}
+  .editor input,.editor textarea{width:100%;border:1px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft);border-radius:10px;padding:10px 13px;font:inherit}
+  .editor textarea{min-height:70px;resize:vertical}
+  .editor .ebtns{display:flex;gap:8px}
+  .editor .save{border:0;background:var(--accent);color:#fff;border-radius:9px;padding:8px 16px;font-weight:700;font-size:13.5px}
+  .editor .cancel{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ink-soft)}
+  .editchip{border:1px solid var(--accent-line);background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:8px 16px;font-weight:600;font-size:13.5px}
+  .editchip.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .confirmbar{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .confirmbar .btn{padding:13px 24px}
+  .confirmbar .helper{font-size:12.5px;color:var(--ink-faint);flex:1;min-width:160px}
+
+  /* ============ CONFIRMATION ============ */
+  .done{padding:64px 40px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  .frame.mobile .done{padding:48px 26px}
+  .done .check{width:72px;height:72px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;font-size:34px;margin-bottom:22px}
+  .done h2{font-size:32px;letter-spacing:-.02em;margin:0 0 12px}
+  .frame.mobile .done h2{font-size:26px}
+  .done p{color:var(--ink-soft);max-width:42ch;margin:0 0 28px}
+  .donecard{width:100%;max-width:420px;border:1px solid var(--line);border-radius:18px;text-align:left;overflow:hidden;background:var(--rail)}
+  .donecard .dr{display:flex;gap:13px;padding:17px 19px}
+  .donecard .dr+.dr{border-top:1px solid var(--line)}
+  .donecard .di{flex:none;color:var(--accent)}
+  .donecard .dt{font-weight:700;font-size:14.5px} .donecard .dd{font-size:13px;color:var(--ink-soft);margin-top:2px;line-height:1.5}
+  .linknote{margin-top:18px;font-size:12.5px;color:var(--ink-faint);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:11px 15px;max-width:460px;line-height:1.55}
+  .linknote code{background:var(--surface);padding:1px 6px;border-radius:5px;font-size:11.5px}
+  .closing{margin-top:26px;font-size:14px;color:var(--ink-soft);font-weight:600;max-width:44ch}
+  .done .btn.ghost{margin-top:26px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<!-- Demo harness -->
+<div class="harness">
+  <div class="tag"><span class="dot"></span> Reggie · journey prototype</div>
+  <div class="hgroup"><label>Tone</label>
+    <div class="seg" id="segTone">
+      <button data-v="warm" aria-pressed="true">Warm</button>
+      <button data-v="pro" aria-pressed="false">Professional</button>
+    </div>
+  </div>
+  <div class="hgroup"><label>Suggested replies</label>
+    <div class="seg" id="segChips">
+      <button data-v="on" aria-pressed="true">On</button>
+      <button data-v="off" aria-pressed="false">Off</button>
+    </div>
+  </div>
+  <div class="hgroup"><label>Device</label>
+    <div class="seg" id="segDevice">
+      <button data-v="desktop" aria-pressed="true">Desktop</button>
+      <button data-v="mobile" aria-pressed="false">Mobile</button>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="restart" id="btnRestart">Restart journey</button>
+  <div class="note">Prototype controls — not part of the product. Toggle to compare options live. Visual theming is applied later by Design.</div>
+</div>
+
+<div class="stage">
+  <div class="frame" id="frame">
+    <div id="screen"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(s,r){return (r||document).querySelector(s)};
+  var el = function(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
+
+  var SECTIONS = [
+    {t:"Candidate Info", d:"Name, contact details, university, and degree information"},
+    {t:"Readiness & Commitment", d:"Your availability and the time you can give"},
+    {t:"Projects & Initiative", d:"What you've built and your hands-on experience"},
+    {t:"Mentorship & Showcase", d:"Mentoring and Demo Day preferences"},
+    {t:"Consent & Communication", d:"Data consent and staying in touch"}
+  ];
+
+  // tone helper: t(warm, pro)
+  var WARM = true;
+  function tone(w,p){ return WARM ? w : p; }
+
+  // ---- Question script (derived from the supplied set; section 3 follow-ups are conditional) ----
+  var NODES = [
+    // 1 — Candidate Info
+    {id:"fullName", sec:0, type:"text", group:"Personal details", label:"Name",
+      q:function(){return tone("Lovely to meet you! 👋 What's your full name, including your last name?","To begin, what is your full name (including surname)?")}},
+    {id:"email", sec:0, type:"email", group:"Personal details", label:"Email", ex:"e.g. you@university.edu",
+      q:function(){return tone("Thanks! What's the best email to reach you on? 📧","What email address should we use to reach you?")}},
+    {id:"mobile", sec:0, type:"tel", group:"Personal details", label:"Mobile", ex:"Include the country code, e.g. +94 77 123 4567",
+      q:function(){return tone("Great. And your mobile number, with country code?","Your mobile number, including country code?")}},
+    {id:"dob", sec:0, type:"date", group:"Personal details", label:"Date of birth", ex:"Format: YYYY-MM-DD",
+      q:function(){return tone("Got it. What's your date of birth?","Date of birth?")}},
+    {id:"university", sec:0, type:"text", group:"Personal details", label:"University",
+      suggest:["University of Moratuwa","University of Colombo (UCSC)","SLIIT","IIT","NSBM Green University","University of Kelaniya","APIIT"], suggestMode:"fill",
+      q:function(){return tone("Which university or higher-education institution do you attend? 🎓","Which university or higher-education institution do you attend?")}},
+    {id:"degree", sec:0, type:"text", group:"Personal details", label:"Degree program",
+      suggest:["BSc Software Engineering","BSc Computer Science","BSc Information Technology","BSc Data Science","BEng / BSc Engineering"], suggestMode:"fill",
+      q:function(){return tone("And what degree program are you studying?","What degree program are you studying?")}},
+    {id:"gradYear", sec:0, type:"year", group:"Personal details", label:"Graduation year", ex:"A 4-digit year, e.g. 2026",
+      q:function(){return tone("What's your expected (or actual) graduation year?","Expected or actual graduation year?")}},
+    {id:"graduated", sec:0, type:"choice", choices:["Yes","No"], group:"Personal details", label:"Already graduated",
+      q:function(){return tone("Have you already graduated?","Have you already graduated?")}},
+    {id:"employed", sec:0, type:"choice", choices:["Yes","No"], group:"Personal details", label:"Currently employed / on internship",
+      q:function(){return tone("Are you currently employed or on an internship?","Are you currently employed or on an internship?")}},
+
+    // 2 — Readiness & Commitment
+    {id:"attend", sec:1, type:"choice", choices:["Yes","No"], group:"Readiness", label:"Can attend all weekend sessions",
+      q:function(){return tone("First up — can you commit to attending all the weekend sessions?","Can you commit to attending all weekend sessions?")}},
+    {id:"laptop", sec:1, type:"choice", choices:["Yes","No"], group:"Readiness", label:"Has laptop and reliable internet",
+      q:function(){return tone("Do you have access to a laptop/computer and reliable internet?","Do you have a laptop/computer and reliable internet?")}},
+    {id:"hours", sec:1, type:"number", min:0, max:80, group:"Readiness", label:"Hours per week outside sessions", ex:"Roughly, in hours per week",
+      suggest:["5","10","15","20"], suggestMode:"fill",
+      q:function(){return tone("About how many hours a week can you dedicate outside the sessions?","Approximately how many hours per week can you dedicate outside sessions?")}},
+
+    // 3 — Projects & Initiative
+    {id:"project", sec:2, type:"long", group:"Projects & AI experience", label:"Significant project",
+      q:function(){return tone("Now the fun part 😊 Tell me about the most significant project you've worked on — university, personal, freelance, or extracurricular. A couple of sentences is plenty.","Tell us about the most significant project you have worked on (university, personal, freelance, or extracurricular). A couple of sentences is fine.")}},
+    {id:"contribution", sec:2, type:"long", group:"Projects & AI experience", label:"Your specific contribution",
+      q:function(){return tone("What was your specific contribution — for example planning, coding, designing, or coordinating the team?","What was your specific contribution (e.g. planning, coding, designing, coordinating)?")}},
+    {id:"links", sec:2, type:"text", optional:true, none:true, group:"Projects & AI experience", label:"Relevant links", ex:"GitHub, portfolio, LinkedIn, demo — or skip if none",
+      suggest:[{label:"I don't have any", value:"none", submit:true}],
+      q:function(){return tone("Any links you'd like to share? GitHub, portfolio, LinkedIn, a demo — totally fine to skip.","Please share any relevant links (GitHub, portfolio, LinkedIn, demo). You can skip if none.")}},
+    {id:"builtAI", sec:2, type:"choice", choices:["Yes","No"], group:"Projects & AI experience", label:"Built an AI prototype before",
+      q:function(){return tone("Have you ever experimented with building a prototype using AI?","Have you ever built a prototype using AI?")}},
+    {id:"aiDesc", sec:2, type:"long", group:"Projects & AI experience", label:"AI prototype — what it did", showIf:function(a){return a.builtAI==="Yes"},
+      q:function(){return tone("Nice! In one simple sentence — what did that AI prototype do?","Briefly, what did that AI prototype do?")}},
+    {id:"aiProblem", sec:2, type:"long", group:"Projects & AI experience", label:"AI prototype — user problem", showIf:function(a){return a.builtAI==="Yes"},
+      q:function(){return tone("What was the main user problem you were trying to solve with it?","What was the main user problem it solved?")}},
+    {id:"implementedRAG", sec:2, type:"choice", choices:["Yes","No"], group:"Projects & AI experience", label:"Implemented a RAG pipeline / AI agent",
+      q:function(){return tone("Have you ever implemented a RAG pipeline or an AI agent?","Have you implemented a RAG pipeline or an AI agent?")}},
+    {id:"ragDetails", sec:2, type:"long", group:"Projects & AI experience", label:"RAG / agent details", showIf:function(a){return a.implementedRAG==="Yes"},
+      q:function(){return tone("Tell me a little about it — what did the RAG pipeline or agent do?","Briefly describe the RAG pipeline or agent.")}},
+
+    // 4 — Mentorship & Showcase
+    {id:"wantMentor", sec:3, type:"choice", choices:["Yes","No"], group:"Mentorship & showcase", label:"Wants mentor pairing",
+      q:function(){return tone("Would you like to be paired with a mentor from Ascentic?","Would you like to be paired with a mentor from Ascentic?")}},
+    {id:"mentorPref", sec:3, type:"text", optional:true, nopref:true, group:"Mentorship & showcase", label:"Mentor expertise preference", ex:"Any area you'd prefer? Or no preference.",
+      suggest:["Frontend","Backend","AI / ML","UX / Product","Cloud / DevOps","Mobile","Data", {label:"No preference", value:"No preference", submit:true}], suggestMode:"fill",
+      q:function(){return tone("Any preference for your mentor's area of expertise? No preference is totally fine.","Do you have a preference for the mentor's expertise area? 'No preference' is fine.")}},
+    {id:"demoDay", sec:3, type:"choice", choices:["Yes","No"], group:"Mentorship & showcase", label:"Willing to present on Demo Day if shortlisted",
+      q:function(){return tone("If your work is shortlisted, would you be up for presenting it on Demo Day?","If shortlisted, would you be willing to present on Demo Day?")}},
+
+    // 5 — Consent & Communication
+    {id:"consent", sec:4, type:"choice", choices:["Yes","No"], group:"Consent & updates", label:"Consent to information processing", required:true,
+      q:function(){return tone("Almost done! 🎉 Do you consent to Ascentic processing the information you've shared to run the AI Launch Pad program?","Do you consent to Ascentic processing your information to administer the AI Launch Pad program?")}},
+    {id:"updates", sec:4, type:"choice", choices:["Yes","No"], group:"Consent & updates", label:"Wants future updates",
+      q:function(){return tone("Last one — would you like updates about future Ascentic events and opportunities?","Would you like to receive updates about future Ascentic events and opportunities?")}}
+  ];
+
+  // ---- State ----
+  var state = { screen:"landing", suggest:true, device:"desktop", answers:{}, idx:-1, transcript:[], lastSec:-1 };
+
+  function visibleNodes(){ return NODES.filter(function(n){ return !n.showIf || n.showIf(state.answers); }); }
+
+  // ---- Validation ----
+  function validate(node, raw){
+    var v = (raw==null?"":String(raw)).trim();
+    if(node.optional && v==="") return {ok:true, value: node.none? "none" : (node.nopref? "No preference":"")};
+    if(v==="") return {ok:false, msg:"This one can't be empty — a short answer is fine."};
+    switch(node.type){
+      case "email":
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return {ok:false,msg:"That doesn't look like an email — try name@example.com"};
+        return {ok:true,value:v};
+      case "tel":
+        var d=v.replace(/[\s\-()]/g,"");
+        if(!/^\+\d{7,15}$/.test(d)) return {ok:false,msg:"Please include the country code, e.g. +94 77 123 4567"};
+        return {ok:true,value:d};
+      case "date":
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(v)) return {ok:false,msg:"Please use the format YYYY-MM-DD, e.g. 2002-08-20"};
+        var dt=new Date(v); if(isNaN(dt.getTime())) return {ok:false,msg:"That date doesn't look valid — check the day and month."};
+        return {ok:true,value:v};
+      case "year":
+        if(!/^\d{4}$/.test(v)) return {ok:false,msg:"A 4-digit year, please — like 2026."};
+        var y=+v; if(y<1990||y>2032) return {ok:false,msg:"That year seems off — try something like 2026."};
+        return {ok:true,value:v};
+      case "number":
+        var n=Number(v); if(isNaN(n)||n<0) return {ok:false,msg:"Please enter a number of hours, e.g. 10."};
+        if(node.max&&n>node.max) return {ok:false,msg:"That seems high — there are only so many hours in a week!"};
+        return {ok:true,value:String(Math.round(n))};
+      case "choice":
+        var m=node.choices.filter(function(c){return c.toLowerCase()===v.toLowerCase()})[0];
+        if(!m) return {ok:false,msg:"Please answer "+node.choices.join(" or ")+"."};
+        return {ok:true,value:m};
+      default:
+        return {ok:true,value:v};
+    }
+  }
+
+  // =================== RENDER: per screen ===================
+  function render(){
+    var f=$("#frame"); f.className="frame"+(state.device==="mobile"?" mobile":"");
+    var root=$("#screen"); root.innerHTML="";
+    if(state.screen==="landing") root.appendChild(renderLanding());
+    else root.appendChild(renderChat()); // chat hosts conversation, summary, and confirmation states
+  }
+
+  // ---- Landing ----
+  function renderLanding(){
+    var w=el("div","landing");
+    w.appendChild(el("div","brandrow","<span class='mark'>AL</span> AI Launch Pad &nbsp;·&nbsp; A community initiative by Ascentic"));
+    w.appendChild(el("h1",null,"Register for the AI Launch Pad."));
+    w.appendChild(el("p","lead","An 8-week online accelerator for IT undergraduates and recent graduates. I'm Reggie — I'll walk you through registration as a quick chat, not a long form."));
+    var pills=el("div","meta-pills");
+    pills.appendChild(el("span","pill","<b>5</b> short sections"));
+    pills.appendChild(el("span","pill","About <b>5 minutes</b>"));
+    pills.appendChild(el("span","pill","You can review everything before submitting"));
+    w.appendChild(pills);
+
+    // privacy inline (open by default, skimmable) — replaces the blocking modal
+    var det=el("details","privacy"); det.open=true;
+    var sum=el("summary",null,"<span class='shield'>&#128737;</span> Privacy notice <span class='chev'>&#9662;</span>");
+    det.appendChild(sum);
+    var body=el("div","body");
+    body.innerHTML =
+      "<div class='sub'>What we collect it for</div>"+
+      "<ul>"+
+        li("Process and confirm your registration")+
+        li("Send important program updates, reminders, and announcements")+
+        li("Coordinate mentoring, training, and industry sessions")+
+        li("Match you with a mentor and support your participation")+
+      "</ul><hr>"+
+      "<ul>"+
+        li("Your mentor sees only what's needed to support you — limited to their assigned mentees.")+
+        li("We don't share your information with external third parties, and we keep it only for the program's duration unless you opt in to future updates.")+
+        li("You can ask to access, correct, or delete your information any time by contacting the organizers.")+
+      "</ul>";
+    det.appendChild(body);
+    w.appendChild(det);
+
+    var cta=el("div","cta-row");
+    var go=el("button","btn","Get started");
+    go.onclick=startChat;
+    cta.appendChild(go);
+    cta.appendChild(el("span","consent-note","By continuing you acknowledge this privacy notice. Your formal consent is recorded in the final step."));
+    w.appendChild(cta);
+    return w;
+  }
+  function li(t){return "<li><span class='ic'>&#10003;</span><span>"+t+"</span></li>";}
+
+  // ---- Chat shell ----
+  function renderChat(){
+    var wrap=el("div","chat-wrap");
+    wrap.appendChild(renderRail());
+
+    var conv=el("div","conv");
+    var head=el("div","conv-head");
+    head.innerHTML="<div class='av'>R</div><div><div class='who'>Reggie</div><div class='role'>AI Launch Pad · registration assistant</div></div>";
+    head.appendChild(el("div","online","<i></i> Online"));
+    conv.appendChild(head);
+    conv.appendChild(renderMiniProg());
+
+    var msgs=el("div","msgs"); msgs.id="msgs";
+    conv.appendChild(msgs);
+
+    var dock=el("div","dock"); dock.id="dock";
+    conv.appendChild(dock);
+
+    wrap.appendChild(conv);
+    // paint transcript + current state after mount
+    setTimeout(paintAll,0);
+    return wrap;
+  }
+
+  function sectionProgress(){
+    // a section is "done" when all its currently-visible nodes are answered
+    var done=0;
+    for(var s=0;s<SECTIONS.length;s++){
+      var nodes=visibleNodes().filter(function(n){return n.sec===s;});
+      if(nodes.length && nodes.every(function(n){return state.answers[n.id]!=null;})) done++;
+    }
+    return done;
+  }
+  function currentSection(){
+    if(state.screen==="summary"||state.screen==="confirm") return SECTIONS.length;
+    var node=visibleNodes()[state.idx];
+    return node?node.sec: (state.idx<0?0:SECTIONS.length-1);
+  }
+
+  function renderRail(){
+    var rail=el("div","rail");
+    rail.appendChild(el("div","eyebrow","Registration"));
+    var steps=el("div","steps");
+    var cur=currentSection(), doneCount=sectionProgress();
+    SECTIONS.forEach(function(s,i){
+      var done = sectionDone(i);
+      var cls="step"+(done?" done":"")+(i===cur&&!done?" current":"");
+      var st=el("div",cls);
+      st.innerHTML="<div class='num'>"+(done?"&#10003;":(i+1))+"</div><div class='line'></div>"+
+        "<div class='label'><div class='t'>"+s.t+"</div><div class='d'>"+s.d+"</div></div>";
+      steps.appendChild(st);
+    });
+    rail.appendChild(steps);
+    var rp=el("div","railprog");
+    var dc=sectionProgress();
+    rp.innerHTML="<div class='cap'><b>"+dc+"</b> of 5 sections completed</div><div class='bar'><i style='width:"+(dc/5*100)+"%'></i></div>";
+    rail.appendChild(rp);
+    return rail;
+  }
+  function sectionDone(i){
+    var nodes=visibleNodes().filter(function(n){return n.sec===i;});
+    return nodes.length>0 && nodes.every(function(n){return state.answers[n.id]!=null;});
+  }
+  function renderMiniProg(){
+    var dc=sectionProgress(), cur=currentSection();
+    var name = cur<SECTIONS.length?SECTIONS[cur].t:"Review";
+    var m=el("div","miniprog");
+    m.innerHTML="<div class='row'><span>"+name+"</span><b>"+dc+" / 5</b></div><div class='bar'><i style='width:"+(dc/5*100)+"%'></i></div>";
+    return m;
+  }
+  function refreshProgress(){
+    var rail=$(".rail"); if(rail){ var nr=renderRail(); rail.parentNode.replaceChild(nr,rail);}
+    var mp=$(".miniprog"); if(mp){ var nm=renderMiniProg(); mp.parentNode.replaceChild(nm,mp);}
+  }
+
+  // ---- transcript paint ----
+  function paintAll(){
+    var box=$("#msgs"); if(!box)return; box.innerHTML="";
+    state.transcript.forEach(function(m){ box.appendChild(renderMsg(m)); });
+    if(state.screen==="summary") box.appendChild(renderSummaryMsg());
+    if(state.screen==="confirm"){ /* handled separately */ }
+    refreshProgress();
+    paintDock();
+    scrollDown();
+  }
+  function renderMsg(m){
+    if(m.kind==="divider"){
+      var dv=el("div","divider");
+      dv.innerHTML="<span class='dl'></span><span class='dp'>"+(m.sec+1)+" of 5 · "+escapeHtml(SECTIONS[m.sec].t)+"</span><span class='dl'></span>";
+      return dv;
+    }
+    if(m.who==="user"){
+      var u=el("div","msg user");
+      u.innerHTML="<div class='ava'>You</div>";
+      u.appendChild(el("div","bubble",escapeHtml(m.text)));
+      return u;
+    }
+    if(m.kind==="transition"){
+      var t=el("div","msg");
+      t.appendChild(el("div","bubble transition", m.text));
+      return t;
+    }
+    var r=el("div","msg");
+    r.innerHTML="<div class='ava'>R</div>";
+    var b=el("div","bubble", m.html ? m.html : escapeHtml(m.textFn? m.textFn() : m.text));
+    if(m.exFn){ var ex=m.exFn(); if(ex) b.appendChild(el("span","hint", escapeHtml(ex))); }
+    r.appendChild(b);
+    return r;
+  }
+
+  function scrollDown(){ var b=$("#msgs"); if(b) b.scrollTop=b.scrollHeight; }
+  function escapeHtml(s){return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+
+  // ---- conversation engine ----
+  function startChat(){
+    state.screen="chat"; state.idx=-1; state.answers={}; state.transcript=[]; state.lastSec=-1;
+    // greeting
+    pushReggie(function(){return tone(
+      "Hey, welcome! I'm Reggie 👋 I'll get you registered in a few quick questions. You can change any answer before you submit.",
+      "Welcome. I'm Reggie, your registration assistant. I'll ask a few short questions, and you can review everything before submitting."
+    );});
+    render();
+    advance(true);
+  }
+
+  function pushReggie(textFn, exFn){ state.transcript.push({who:"reggie", textFn:textFn, exFn:exFn}); }
+  function pushUser(text){ state.transcript.push({who:"user", text:text}); }
+  function pushTransition(text){ state.transcript.push({who:"reggie", kind:"transition", text:text}); }
+  function pushDivider(sec){ state.transcript.push({kind:"divider", sec:sec}); }
+
+  function advance(first){
+    // move idx to next visible unanswered node
+    var nodes=visibleNodes();
+    var next = first? 0 : state.idx+1;
+    // skip already-answered (e.g. after conditional changes)
+    while(next<nodes.length && state.answers[nodes[next].id]!=null) next++;
+    if(next>=nodes.length){ goSummary(); return; }
+    state.idx=next;
+    var node=nodes[next];
+    // section boundary: a labelled divider denotes the section; a short line adds warmth without repeating the name
+    if(node.sec!==state.lastSec){
+      pushDivider(node.sec);
+      if(!first) pushTransition(transitionLine());
+    }
+    state.lastSec=node.sec;
+    askNode(node);
+  }
+
+  function transitionLine(){
+    return tone("Great progress! These next ones are quick. 😊","Section complete. Continuing.");
+  }
+
+  function askNode(node){
+    // typing indicator, then the question bubble
+    var box=$("#msgs"); if(!box)return;
+    var typ=el("div","msg"); typ.innerHTML="<div class='ava'>R</div>";
+    typ.appendChild(el("div","bubble","<span class='typing'><span></span><span></span><span></span></span>"));
+    box.appendChild(typ); scrollDown();
+    clearDock();
+    setTimeout(function(){
+      pushReggie(node.q, node.ex?function(){return node.ex;}:null);
+      paintAll(); // rebuilds from transcript; clears the typing indicator and stays robust to re-renders
+    }, 480);
+  }
+
+  // ---- input dock ----
+  function clearDock(){ var d=$("#dock"); if(d) d.innerHTML=""; }
+  function paintDock(){
+    var d=$("#dock"); if(!d)return; d.innerHTML="";
+    if(state.screen!=="chat"){ return; }
+    var node=visibleNodes()[state.idx]; if(!node)return;
+    d.appendChild(dockField(node));
+    d.appendChild(el("div","dockfoot","Your answers stay in this session and are shown back to you before submitting."));
+  }
+
+  // normalize a node's suggestions into [{label,value,submit}]
+  function getSuggestions(node){
+    if(node.type==="choice"){
+      return node.choices.map(function(c){return {label:c, value:c, submit:true};});
+    }
+    if(!node.suggest) return [];
+    var def = node.suggestMode==="submit";
+    return node.suggest.map(function(s){
+      if(typeof s==="string") return {label:s, value:s, submit:def};
+      return {label:s.label, value:(s.value!=null?s.value:s.label), submit:(s.submit!=null?s.submit:def)};
+    });
+  }
+
+  function dockField(node){
+    var wrap=el("div");
+    var sugg = getSuggestions(node);
+    var showSugg = state.suggest && sugg.length>0;
+
+    // example / format hint
+    if(node.type==="choice") wrap.appendChild(el("p","examplehint", showSugg ? "Tap a reply below, or type "+node.choices.join(" or ")+"." : "Type "+node.choices.join(" or ")+"."));
+    else if(node.ex) wrap.appendChild(el("p","examplehint","<b>"+escapeHtml(node.ex)+"</b>"));
+
+    // build the input first so suggestions can reference it
+    var input = node.type==="long" ? el("textarea") : el("input");
+    input.placeholder = node.type==="long"?"Type your answer…":"Type your reply…";
+    if(node.type==="email") input.type="email";
+    if(node.type==="tel") input.type="tel";
+
+    // suggested responses (input always stays available)
+    if(showSugg){
+      var block=el("div","suggest");
+      block.appendChild(el("div","suggest-label","Suggested responses"));
+      var chips=el("div","chips");
+      sugg.forEach(function(s){
+        var b=el("button","chip"+(s.submit?"":" alt"), escapeHtml(s.label));
+        b.onclick=function(){
+          if(s.submit){ submitAnswer(node, s.value); }
+          else { input.value=s.value; input.focus(); }
+        };
+        chips.appendChild(b);
+      });
+      block.appendChild(chips);
+      wrap.appendChild(block);
+    }
+
+    var row=el("div","field");
+    row.appendChild(input);
+    var send=el("button","send","&#8593;"); send.title="Send";
+    row.appendChild(send);
+    wrap.appendChild(row);
+
+    function go(){ submitTyped(node, input.value, wrap, input); }
+    send.onclick=go;
+    input.addEventListener("keydown",function(e){
+      if(e.key==="Enter" && (node.type!=="long" || (e.metaKey||e.ctrlKey))){ e.preventDefault(); go(); }
+    });
+    setTimeout(function(){input.focus();},30);
+    return wrap;
+  }
+
+  function submitTyped(node, raw, wrap, input){
+    var res=validate(node, raw);
+    // clear previous error
+    var old=$(".errline",wrap); if(old) old.remove();
+    if(!res.ok){
+      wrap.appendChild(el("div","errline","<span>&#9888;</span> "+escapeHtml(res.msg)));
+      if(input) input.focus();
+      return;
+    }
+    submitAnswer(node, res.value, raw);
+  }
+
+  function submitAnswer(node, value, rawForBubble){
+    var res = node.type==="choice"? {ok:true,value:value} : validate(node, value);
+    if(!res.ok){ return; }
+    // echo user bubble
+    var shown = rawForBubble!=null? rawForBubble : value;
+    if(node.optional && (value==="none"||value==="No preference") && (rawForBubble==null||rawForBubble==="")) shown=value;
+    pushUser(shown);
+    state.answers[node.id]=res.value;
+    // auto-fill skipped conditionals
+    if(node.id==="implementedRAG" && res.value==="No") state.answers.ragDetails="N/A";
+    if(node.id==="builtAI" && res.value==="No"){ delete state.answers.aiDesc; delete state.answers.aiProblem; }
+    var box=$("#msgs"); box.appendChild(renderMsg(state.transcript[state.transcript.length-1]));
+    clearDock(); refreshProgress(); scrollDown();
+    advance(false);
+  }
+
+  // =================== SUMMARY ===================
+  function goSummary(){
+    state.screen="summary";
+    pushReggie(function(){return tone(
+      "That's everything — thank you! 🎉 Here's a quick summary. Tap the pencil on any line to change it, then hit Submit.",
+      "That's everything. Here's a summary of your answers. Use the edit control on any line to change it, then submit."
+    );});
+    var box=$("#msgs");
+    if(box){ box.appendChild(renderMsg(state.transcript[state.transcript.length-1])); box.appendChild(renderSummaryMsg()); }
+    refreshProgress(); clearDock(); scrollDown();
+  }
+
+  var GROUP_ORDER=["Personal details","Readiness","Projects & AI experience","Mentorship & showcase","Consent & updates"];
+  function renderSummaryMsg(){
+    var m=el("div","msg"); m.style.maxWidth="92%";
+    m.innerHTML="<div class='ava'>R</div>";
+    var card=el("div","summary");
+    card.appendChild(el("div","shead","<span>&#128221;</span> Your registration summary"));
+    GROUP_ORDER.forEach(function(g){
+      var nodes=visibleNodes().filter(function(n){return n.group===g && state.answers[n.id]!=null;});
+      // also include auto-set ragDetails
+      if(g==="Projects & AI experience" && state.answers.ragDetails!=null && !nodes.some(function(n){return n.id==="ragDetails"})){
+        // represent N/A row via a synthetic node lookup
+      }
+      if(!nodes.length) return;
+      var grp=el("div","sgroup");
+      grp.appendChild(el("div","gt", g));
+      nodes.forEach(function(n){ grp.appendChild(renderSRow(n)); });
+      card.appendChild(grp);
+    });
+    var bar=el("div","confirmbar");
+    var sub=el("button","btn","Submit registration");
+    sub.onclick=finalize;
+    bar.appendChild(sub);
+    bar.appendChild(el("span","helper","Nothing is sent until you submit. You'll get a confirmation email right after."));
+    card.appendChild(bar);
+    m.appendChild(card);
+    return m;
+  }
+
+  function renderSRow(node, updated){
+    var row=el("div","srow"+(updated?" updated":"")); row.dataset.id=node.id;
+    row.appendChild(el("div","k", escapeHtml(node.label)));
+    var v=el("div","v", escapeHtml(displayVal(node)) + (updated?"<span class='updtag'>Updated &#10003;</span>":""));
+    row.appendChild(v);
+    var ed=el("button","edit","&#9998;"); ed.title="Edit "+node.label;
+    ed.onclick=function(){ openEditor(row, node); };
+    row.appendChild(ed);
+    return row;
+  }
+  function displayVal(node){ return state.answers[node.id]; }
+
+  function openEditor(row, node){
+    row.innerHTML=""; row.classList.remove("updated");
+    row.appendChild(el("div","k", escapeHtml(node.label)));
+    var box=el("div","editor");
+    var current=state.answers[node.id];
+    var getValue;
+
+    if(node.type==="choice"){
+      var crow=el("div","crow");
+      var sel=current;
+      node.choices.forEach(function(c){
+        var b=el("button","editchip"+(c===sel?" sel":""), c);
+        b.onclick=function(){ sel=c; Array.prototype.forEach.call(crow.children,function(x){x.classList.remove("sel");}); b.classList.add("sel"); };
+        crow.appendChild(b);
+      });
+      box.appendChild(crow);
+      getValue=function(){return {ok:true,value:sel};};
+    } else {
+      var input = node.type==="long"? el("textarea"):el("input");
+      input.value=current==="none"||current==="No preference"||current==="N/A"?"":current;
+      input.placeholder= node.ex||"Type your answer…";
+      box.appendChild(input);
+      getValue=function(){return validate(node, input.value);};
+      setTimeout(function(){input.focus();},20);
+    }
+    var err=el("div","errline"); err.style.display="none"; box.appendChild(err);
+    var btns=el("div","ebtns");
+    var save=el("button","save","Save");
+    var cancel=el("button","cancel","Cancel");
+    save.onclick=function(){
+      var r=getValue();
+      if(!r.ok){ err.style.display="flex"; err.innerHTML="<span>&#9888;</span> "+escapeHtml(r.msg); return; }
+      state.answers[node.id]=r.value;
+      if(node.id==="implementedRAG" && r.value==="No") state.answers.ragDetails="N/A";
+      var nr=renderSRow(node, true);
+      row.parentNode.replaceChild(nr,row);
+      // brief Reggie acknowledgement in chat
+      pushReggie(function(){return tone("Updated your "+node.label.toLowerCase()+" ✓","Updated: "+node.label+".");});
+      var msgs=$("#msgs");
+      // insert acknowledgement before the summary message (which is the last child)
+      var ack=renderMsg(state.transcript[state.transcript.length-1]);
+      msgs.insertBefore(ack, msgs.lastChild);
+      scrollToRow(nr);
+    };
+    cancel.onclick=function(){ var nr=renderSRow(node,false); row.parentNode.replaceChild(nr,row); };
+    btns.appendChild(save); btns.appendChild(cancel);
+    box.appendChild(btns);
+    row.appendChild(box);
+  }
+  function scrollToRow(r){ if(r&&r.scrollIntoView) r.scrollIntoView({block:"nearest"}); }
+
+  // =================== CONFIRMATION ===================
+  function finalize(){
+    state.screen="confirm";
+    var root=$("#screen"); root.innerHTML="";
+    var name=(state.answers.fullName||"").split(/\s+/)[0];
+    var done=el("div","done");
+    done.innerHTML=
+      "<div class='check'>&#10003;</div>"+
+      "<h2>Registration received</h2>"+
+      "<p>"+tone(
+        (name?"Thanks, "+escapeHtml(name)+" — your":"Your")+" AI Launch Pad registration is in. There's nothing more for you to do right now. 🎉",
+        (name?"Thank you, "+escapeHtml(name)+". Your":"Your")+" AI Launch Pad registration has been recorded. No further action is needed at this time."
+      )+"</p>";
+    var card=el("div","donecard");
+    card.innerHTML=
+      "<div class='dr'><div class='di'>&#128203;</div><div><div class='dt'>Your application is recorded</div><div class='dd'>It's been added to the program's registration list along with everyone else who's applied.</div></div></div>"+
+      "<div class='dr'><div class='di'>&#128270;</div><div><div class='dt'>Every application is reviewed by hand</div><div class='dd'>The team reads through each registration individually to draw up a shortlist, so this takes a little time.</div></div></div>"+
+      "<div class='dr'><div class='di'>&#9993;</div><div><div class='dt'>Shortlisted? HR will reach out</div><div class='dd'>If you're selected, our HR team will contact you directly with the next steps. You don't need to follow up.</div></div></div>";
+    done.appendChild(card);
+    done.appendChild(el("div","closing", tone(
+      "You're all set — you can safely close this window now. Best of luck! 🚀",
+      "You're all set — you can safely close this window. Best of luck."
+    )));
+    root.appendChild(done);
+  }
+
+  // =================== Harness controls ===================
+  function seg(id, fn){
+    var s=$("#"+id);
+    s.addEventListener("click",function(e){
+      var b=e.target.closest("button"); if(!b)return;
+      Array.prototype.forEach.call(s.children,function(x){x.setAttribute("aria-pressed", x===b?"true":"false");});
+      fn(b.dataset.v);
+    });
+  }
+  seg("segTone", function(v){ WARM=(v==="warm"); repaintForOptionChange(); });
+  seg("segChips", function(v){ state.suggest=(v==="on"); repaintForOptionChange(); });
+  seg("segDevice", function(v){ state.device=v; render(); });
+  $("#btnRestart").onclick=function(){ state.screen="landing"; WARM=$("#segTone button[aria-pressed='true']").dataset.v==="warm"; render(); };
+
+  function repaintForOptionChange(){
+    if(state.screen==="landing"){ render(); return; }
+    if(state.screen==="chat"||state.screen==="summary"){ paintAll(); }
+    // confirmation: leave as is
+  }
+
+  // ---- boot ----
+  render();
+})();
+</script>
